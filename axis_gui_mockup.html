@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#020810;font-family:'Courier New',monospace;color:#00d4ff;overflow:hidden;height:600px}
+.root{display:flex;flex-direction:column;height:600px;background:#020810}
+
+/* TITLEBAR */
+.titlebar{display:flex;align-items:center;justify-content:space-between;background:#040d1a;border-bottom:1px solid #0a2a3a;padding:0 14px;height:36px;flex-shrink:0}
+.tb-left{display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%}
+.d-red{background:#ff5f57}.d-yellow{background:#ffbd2e}.d-green{background:#28ca41}
+.tb-title{font-size:11px;color:#00d4ff;letter-spacing:2px;margin-left:10px}
+.tb-sep{color:#1a4a5a;margin:0 6px}
+.tb-right{display:flex;align-items:center;gap:16px;font-size:11px}
+.online{color:#00ff88;display:flex;align-items:center;gap:5px}
+.pulse{width:7px;height:7px;border-radius:50%;background:#00ff88;animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.2}}
+.tb-time{color:#3a7aaa;font-size:11px}
+
+/* MAIN LAYOUT */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* LEFT SIDEBAR */
+.sidebar{width:230px;flex-shrink:0;background:#040d1a;border-right:1px solid #0a2a3a;display:flex;flex-direction:column;padding:16px 14px;overflow-y:auto;gap:14px}
+.logo-title{font-size:26px;font-weight:bold;color:#00d4ff;letter-spacing:4px}
+.logo-sub{font-size:9px;color:#1a5a6a;letter-spacing:1px;line-height:1.4;margin-top:2px}
+.logo-img{width:80px;height:80px;background:#071828;border:1px solid #0a3a4a;display:flex;align-items:center;justify-content:center;margin:4px 0;position:relative;overflow:hidden}
+.logo-img img{width:100%;height:100%;object-fit:cover}
+
+/* RINGS */
+.ring-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.ring-canvas{position:relative;width:130px;height:130px}
+.ring-canvas svg{position:absolute;top:0;left:0}
+.ring-spin{animation:spin 6s linear infinite;transform-origin:65px 65px}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* WAVE */
+.wave{display:flex;align-items:flex-end;gap:3px;height:32px;margin:2px 0}
+.wb{width:6px;background:#00d4ff;border-radius:1px;animation:wv 1.2s ease-in-out infinite}
+.wb:nth-child(1){height:6px;animation-delay:0s}
+.wb:nth-child(2){height:14px;animation-delay:.1s}
+.wb:nth-child(3){height:22px;animation-delay:.2s}
+.wb:nth-child(4){height:30px;animation-delay:.3s}
+.wb:nth-child(5){height:22px;animation-delay:.4s}
+.wb:nth-child(6){height:14px;animation-delay:.5s}
+.wb:nth-child(7){height:6px;animation-delay:.6s}
+.wb:nth-child(8){height:12px;animation-delay:.7s}
+.wb:nth-child(9){height:20px;animation-delay:.8s}
+@keyframes wv{0%,100%{opacity:1}50%{opacity:0.25}}
+
+/* STATS */
+.stat-row{display:flex;gap:0;margin-bottom:3px}
+.stat-key{font-size:9px;color:#2a5a6a;min-width:65px;padding:3px 0}
+.stat-val{font-size:9px;color:#00d4ff;font-weight:bold;padding:3px 0}
+.divider{height:1px;background:#0a2a3a;margin:4px 0}
+
+/* QUICK CMDS */
+.section-label{font-size:9px;color:#2a5a6a;letter-spacing:2px;text-align:center;margin-bottom:4px}
+.cmd-item{font-size:10px;color:#3a8aaa;padding:3px 0;cursor:pointer;border-left:2px solid transparent;padding-left:6px;transition:all .15s}
+.cmd-item:hover{color:#00d4ff;border-left-color:#00d4ff}
+
+/* RIGHT: CHAT */
+.chat-area{flex:1;display:flex;flex-direction:column;background:#020810}
+.chat-header{padding:10px 20px;border-bottom:1px solid #0a2a3a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.chat-header-title{font-size:11px;letter-spacing:2px;color:#00d4ff}
+.chat-header-right{font-size:9px;color:#1a4a5a;display:flex;gap:16px}
+.chat-header-right span{cursor:default}
+
+.messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:12px}
+.messages::-webkit-scrollbar{width:4px}
+.messages::-webkit-scrollbar-track{background:#040d1a}
+.messages::-webkit-scrollbar-thumb{background:#0a3a4a}
+.msg{display:flex;flex-direction:column;gap:2px}
+.msg-header{display:flex;align-items:center;gap:10px}
+.msg-sender{font-size:11px;font-weight:bold;letter-spacing:1px}
+.sender-axis{color:#00d4ff}
+.sender-you{color:#00ff88}
+.msg-text{font-size:12px;color:#7ac8e8;line-height:1.6;padding-left:0}
+.msg-time{font-size:10px;color:#1a4a5a;margin-top:2px}
+
+/* QUICK ACTION PILLS */
+.pills{display:flex;gap:6px;padding:8px 20px;flex-wrap:wrap;border-top:1px solid #0a2a3a;flex-shrink:0}
+.pill{font-size:9px;color:#2a6a8a;border:1px solid #0a3a4a;padding:4px 10px;cursor:pointer;letter-spacing:1px;transition:all .15s}
+.pill:hover{color:#00d4ff;border-color:#00d4ff}
+
+/* INPUT BAR */
+.input-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #0a2a3a;background:#040d1a;flex-shrink:0}
+.attach-btn{width:30px;height:30px;border:1px solid #0a3a4a;background:transparent;color:#2a6a8a;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.attach-btn:hover{color:#00d4ff;border-color:#00d4ff}
+.chat-input{flex:1;background:transparent;border:none;outline:none;font-family:'Courier New',monospace;font-size:12px;color:#c8e8ff;caret-color:#00d4ff}
+.chat-input::placeholder{color:#1a4a5a}
+.mic-btn{font-size:10px;color:#2a6a8a;border:1px solid #0a3a4a;padding:5px 12px;cursor:pointer;background:transparent;letter-spacing:1px;transition:all .15s}
+.mic-btn:hover{color:#00d4ff;border-color:#00d4ff}
+.send-btn{font-size:10px;color:#00d4ff;border:1px solid #00d4ff;padding:5px 16px;cursor:pointer;background:#003d5c;letter-spacing:1px;transition:all .15s;font-family:'Courier New',monospace}
+.send-btn:hover{background:#005580}
+.send-btn:active{transform:scale(0.97)}
+</style>
+</head>
+<body>
+<div class="root">
+  <!-- TITLEBAR -->
+  <div class="titlebar">
+    <div class="tb-left">
+      <div class="dot d-red"></div><div class="dot d-yellow"></div><div class="dot d-green"></div>
+      <span class="tb-title">A.X.I.S.<span class="tb-sep">|</span>v4.0<span class="tb-sep">|</span>JARVIS EDITION<span class="tb-sep">|</span>GROQ + ELEVENLABS</span>
+    </div>
+    <div class="tb-right">
+      <span class="online"><div class="pulse"></div>ONLINE</span>
+      <span class="tb-time" id="clock">12:33:53 Sun 24 May</span>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div>
+        <div class="logo-title">A.X.I.S.</div>
+        <div class="logo-sub">ARTIFICIAL EXECUTION<br>& INTELLIGENCE SYSTEM</div>
+      </div>
+
+      <div class="logo-img">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <rect width="80" height="80" fill="#071828"/>
+          <circle cx="40" cy="40" r="28" fill="none" stroke="#003344" stroke-width="1"/>
+          <circle cx="40" cy="40" r="20" fill="none" stroke="#005566" stroke-width="1"/>
+          <ellipse cx="40" cy="40" rx="28" ry="12" fill="none" stroke="#00aacc" stroke-width="0.8" transform="rotate(-30 40 40)"/>
+          <circle cx="40" cy="40" r="6" fill="#001a2e" stroke="#00d4ff" stroke-width="1.5"/>
+          <circle cx="40" cy="12" r="3" fill="#00d4ff"/>
+        </svg>
+      </div>
+
+      <!-- RINGS -->
+      <div class="ring-wrap">
+        <div class="ring-canvas">
+          <svg width="130" height="130" viewBox="0 0 130 130">
+            <line x1="5" y1="65" x2="125" y2="65" stroke="#002233" stroke-width="0.5"/>
+            <line x1="65" y1="5" x2="65" y2="125" stroke="#002233" stroke-width="0.5"/>
+            <circle cx="65" cy="65" r="60" fill="none" stroke="#001a2e" stroke-width="1"/>
+            <circle cx="65" cy="65" r="50" fill="none" stroke="#002233" stroke-width="1"/>
+            <circle cx="65" cy="65" r="40" fill="none" stroke="#003344" stroke-width="1"/>
+            <circle cx="65" cy="65" r="30" fill="none" stroke="#004466" stroke-width="1.5"/>
+            <circle cx="65" cy="65" r="20" fill="none" stroke="#006688" stroke-width="1.5"/>
+            <g class="ring-spin">
+              <circle cx="65" cy="5" r="3.5" fill="#00d4ff"/>
+              <circle cx="125" cy="65" r="3.5" fill="#00d4ff"/>
+              <circle cx="65" cy="125" r="3.5" fill="#00d4ff"/>
+              <circle cx="5" cy="65" r="3.5" fill="#00d4ff"/>
+            </g>
+            <circle cx="65" cy="65" r="13" fill="#001a2e" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="65" y="70" text-anchor="middle" fill="#00d4ff" font-family="Courier New" font-size="12" font-weight="bold">AX</text>
+          </svg>
+        </div>
+        <div class="wave">
+          <div class="wb"></div><div class="wb"></div><div class="wb"></div>
+          <div class="wb"></div><div class="wb"></div><div class="wb"></div>
+          <div class="wb"></div><div class="wb"></div><div class="wb"></div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div>
+        <div class="stat-row"><span class="stat-key">AI ENGINE</span><span class="stat-val">Groq LLaMA 3.3 70B</span></div>
+        <div class="stat-row"><span class="stat-key">VOICE</span><span class="stat-val">ElevenLabs TTS</span></div>
+        <div class="stat-row"><span class="stat-key">MEMORY</span><span class="stat-val">Encrypted AES</span></div>
+        <div class="stat-row"><span class="stat-key">HISTORY</span><span class="stat-val">Persistent</span></div>
+        <div class="stat-row"><span class="stat-key">MIC</span><span class="stat-val" id="mic-stat">Offline</span></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- QUICK CMDS -->
+      <div>
+        <div class="section-label">QUICK COMMANDS</div>
+        <div class="cmd-item" onclick="fillInput('Open YouTube')">"Open YouTube"</div>
+        <div class="cmd-item" onclick="fillInput('What time is it?')">"What time is it?"</div>
+        <div class="cmd-item" onclick="fillInput('Generate image of...')">"Generate image of..."</div>
+        <div class="cmd-item" onclick="fillInput('Search for ___')">"Search for ___"</div>
+        <div class="cmd-item" onclick="fillInput('Remember my name is...')">"Remember my name is..."</div>
+        <div class="cmd-item" onclick="fillInput('Convert PDF to Word')">"Convert PDF to Word"</div>
+        <div class="cmd-item" onclick="fillInput('Show map of ___')">"Show map of ___"</div>
+        <div class="cmd-item" onclick="fillInput('Write a Python script')">"Write a Python script"</div>
+      </div>
+    </div>
+
+    <!-- CHAT AREA -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <span class="chat-header-title">COMMUNICATION INTERFACE</span>
+        <div class="chat-header-right">
+          <span>ENCRYPTED</span><span>·</span><span>PERSISTENT</span><span>·</span><span>AI-POWERED</span>
+        </div>
+      </div>
+
+      <div class="messages" id="msgs">
+        <div class="msg">
+          <div class="msg-header">
+            <span class="msg-sender sender-axis">AXIS</span>
+            <span class="msg-text">AXIS online. All systems fully operational. Last session on Friday, May 22 at 12:27 PM — we were working on: Asked: hi. Would you like to continue?</span>
+          </div>
+          <div class="msg-time">12:32</div>
+        </div>
+      </div>
+
+      <!-- PILLS -->
+      <div class="pills">
+        <div class="pill" onclick="fillInput('Open YouTube')">Open YouTube</div>
+        <div class="pill" onclick="fillInput('Generate image')">Generate image</div>
+        <div class="pill" onclick="fillInput('Search for ___')">Search for ___</div>
+        <div class="pill" onclick="fillInput('Remember my name')">Remember my name</div>
+        <div class="pill" onclick="fillInput('Convert PDF to Word')">Convert PDF to Word</div>
+        <div class="pill" onclick="fillInput('Write Python code')">Write Python code</div>
+        <div class="pill" onclick="fillInput('Show map of ___')">Show map of ___</div>
+        <div class="pill" onclick="fillInput('Exit AXIS')">Exit AXIS</div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="input-bar">
+        <button class="attach-btn" title="Attach file">+</button>
+        <input class="chat-input" id="inp" placeholder="Type a command or speak..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+        <button class="mic-btn" onclick="toggleMic()" id="mic-btn">MIC</button>
+        <button class="send-btn" onclick="sendMsg()">SEND</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function pad(n){return String(n).padStart(2,'0')}
+function updateClock(){
+  const d=new Date();
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('clock').textContent=
+    pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())+' '+
+    days[d.getDay()]+' '+d.getDate()+' '+months[d.getMonth()];
+}
+setInterval(updateClock,1000);updateClock();
+
+function fillInput(t){document.getElementById('inp').value=t;document.getElementById('inp').focus()}
+
+let micOn=false;
+function toggleMic(){
+  micOn=!micOn;
+  document.getElementById('mic-btn').style.color=micOn?'#00ff88':'#2a6a8a';
+  document.getElementById('mic-btn').style.borderColor=micOn?'#00ff88':'#0a3a4a';
+  document.getElementById('mic-stat').textContent=micOn?'Online':'Offline';
+  document.getElementById('mic-stat').style.color=micOn?'#00ff88':'#00d4ff';
+}
+
+const responses=[
+  "Understood. Processing your request now.",
+  "Affirmative. All systems are functioning within normal parameters.",
+  "Request acknowledged. Executing command.",
+  "Certainly. Allow me to handle that for you.",
+  "Analysis complete. Here is what I found.",
+];
+let ri=0;
+
+function sendMsg(){
+  const inp=document.getElementById('inp');
+  const txt=inp.value.trim();
+  if(!txt)return;
+  const msgs=document.getElementById('msgs');
+  const now=new Date();
+  const t=pad(now.getHours())+':'+pad(now.getMinutes());
+
+  // User msg
+  const um=document.createElement('div');
+  um.className='msg';
+  um.innerHTML=`<div class="msg-header"><span class="msg-sender sender-you">YOU</span><span class="msg-text" style="color:#c8e8ff">${txt}</span></div><div class="msg-time">${t}</div>`;
+  msgs.appendChild(um);
+  inp.value='';
+
+  // Thinking
+  const tm=document.createElement('div');
+  tm.className='msg';
+  tm.innerHTML=`<div class="msg-header"><span class="msg-sender sender-axis">AXIS</span><span class="msg-text" style="color:#1a5a6a;font-style:italic">Processing request...</span></div>`;
+  msgs.appendChild(tm);
+  msgs.scrollTop=msgs.scrollHeight;
+
+  setTimeout(()=>{
+    tm.innerHTML=`<div class="msg-header"><span class="msg-sender sender-axis">AXIS</span><span class="msg-text">${responses[ri%responses.length]}</span></div><div class="msg-time">${t}</div>`;
+    ri++;msgs.scrollTop=msgs.scrollHeight;
+  },900);
+}
+</script>
+</body>
+</html>
